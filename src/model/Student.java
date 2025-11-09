@@ -1,12 +1,9 @@
 package model;
 
-/**
- * Student extends Person.
- * TODO:
- *  - Thuộc tính: studentCode, classGroupId
- *  - (tùy chọn) implements Rankable (iface)
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class Student extends Person {
-    private String studentCode;
-    private String classGroupId;
-}
+    private String major;
+    private int year;
+    private List<Grade> grades;
