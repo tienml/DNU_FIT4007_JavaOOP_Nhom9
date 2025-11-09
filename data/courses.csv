@@ -1,1 +1,8 @@
 id,courseCode,name,credit,weightQuiz,weightMid,weightFinal,weightProject
+1,IT101,Programming Fundamentals,3,0.1,0.2,0.5,0.2
+2,IT102,Database Systems,3,0.1,0.3,0.5,0.1
+3,IT103,Data Structures,4,0.1,0.2,0.6,0.1
+4,IT104,Computer Networks,3,0.15,0.25,0.5,0.1
+5,IT105,Software Engineering,3,0.1,0.2,0.4,0.3
+6,EC101,Microeconomics,3,0.1,0.2,0.6,0.1
+7,MATH101,Discrete Mathematics,3,0.1,0.2,0.6,0.1
