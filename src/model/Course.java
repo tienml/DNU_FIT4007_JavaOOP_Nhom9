@@ -9,4 +9,3 @@ public class Course {
     private double wMid;
     private double wFinal;
     private double wProject;
-}

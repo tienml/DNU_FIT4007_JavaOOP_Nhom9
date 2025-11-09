@@ -12,4 +12,4 @@ public class Grade {
     private Double fin;
     private Double project;
     private Double total;
-}
+
