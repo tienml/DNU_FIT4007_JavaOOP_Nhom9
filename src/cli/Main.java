@@ -5,10 +5,7 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) {
         try {
-            // 1. Hiển thị banner chào mừng
             printWelcomeBanner();
-
-            // 2. Khởi tạo repositories (tầng dữ liệu)
             System.out.println(" Đang khởi tạo repositories...");
             initializeRepositories();
             System.out.println(" Repositories đã sẵn sàng!");
@@ -62,7 +59,6 @@ public class Main {
         }
     }
     private static void startApplication() {
-        // Tạo menu và bắt đầu
         Menu menu = new Menu();
         menu.displayMainMenu();
     }
@@ -78,12 +74,10 @@ public class Main {
         System.out.print("Nhấn Enter để tiếp tục...");
         try {
             System.in.read();
-            // Đọc hết buffer
             while (System.in.available() > 0) {
                 System.in.read();
             }
         } catch (Exception e) {
-            // Ignore
         }
     }
 }
