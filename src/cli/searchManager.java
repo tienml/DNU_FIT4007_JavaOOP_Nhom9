@@ -1,8 +1,13 @@
 package cli;
 
-/**
- * Quản lý tìm kiếm từ CLI.
- * TODO:
- *  - Gọi SearchService để tìm sinh viên/học phần
- */
-public class searchManager { /* TODO: implement */ }
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class searchManager {
+
+    public static List<String> fuzzySearch(List<String> names, String keyword) {
+        return names.stream()
+                .filter(name -> name.toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+}
