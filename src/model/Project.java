@@ -1,10 +1,16 @@
 package model;
 
-/**
- * Project assessment.
- * TODO:
- *  - weight = course.wProject
- */
 public class Project extends Assessment {
-    @Override public double weight(Course c){ return 0; /* TODO */ }
+
+    public Project() {
+        super();
+    }
+
+    public Project(String name, double weight, Double score) {
+        super(name, weight, score);
+    }
+
+    public String getType() {
+        return "Project";
+    }
 }
