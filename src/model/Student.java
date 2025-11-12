@@ -59,7 +59,7 @@ public class Student extends Person {
             }
         }
 
-        if (totalCredits == 0) return 0.0; // Chưa có dữ liệu hợp lệ
+        if (totalCredits == 0) return 0.0;
 
         return totalWeightedScore / totalCredits;
     }
