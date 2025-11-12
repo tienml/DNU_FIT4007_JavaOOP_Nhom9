@@ -2,13 +2,22 @@ package cli;
 
 import java.util.Scanner;
 
-/**
- * Xử lý nhập từ bàn phím.
- * TODO:
- *  - Đọc số double an toàn (0..10)
- *  - Đọc chuỗi không rỗng
- */
 public class inputHandler {
-    private final Scanner sc = new Scanner(System.in);
-    // TODO: methods readInt, readDouble, readString...
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static String getString(String message) {
+        System.out.print(message);
+        return scanner.nextLine().trim();
+    }
+
+    public static int getInt(String message) {
+        while (true) {
+            try {
+                System.out.print(message);
+                return Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Vui lòng nhập số hợp lệ!");
+            }
+        }
+    }
 }

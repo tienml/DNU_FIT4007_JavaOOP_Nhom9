@@ -1,9 +1,16 @@
 package cli;
 
-/**
- * In bảng/biểu đồ text-based.
- * TODO:
- *  - In bảng xếp hạng
- *  - Vẽ histogram text cho phân bố điểm
- */
-public class reportGenerator { /* TODO: implement */ }
+public class reportGenerator {
+
+    public void generateAverageScoreReport() {
+        System.out.println("→ Tạo báo cáo điểm trung bình...");
+    }
+
+    public void generateStudentByClassReport() {
+        System.out.println("→ Tạo báo cáo sinh viên theo lớp...");
+    }
+
+    public void exportReportToFile() {
+        System.out.println("→ Xuất file báo cáo thống kê...");
+    }
+}
