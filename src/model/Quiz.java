@@ -1,10 +1,16 @@
 package model;
 
-/**
- * Quiz assessment.
- * TODO:
- *  - weight = course.wQuiz
- */
 public class Quiz extends Assessment {
-    @Override public double weight(Course c){ return 0; /* TODO */ }
+
+    public Quiz() {
+        super();
+    }
+
+    public Quiz(String name, double weight, Double score) {
+        super(name, weight, score);
+    }
+
+    public String getType() {
+        return "Quiz";
+    }
 }

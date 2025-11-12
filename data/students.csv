@@ -1,1 +1,11 @@
 id,studentCode,fullName,gender,birthDate,classGroupId
+1,SV001,Nguyen Van An,Male,2003-03-12,CG01
+2,SV002,Tran Thi Binh,Female,2003-08-22,CG01
+3,SV003,Le Minh Hoang,Male,2002-12-01,CG02
+4,SV004,Pham Thi Trang,Female,2003-05-05,CG02
+5,SV005,Do Van Nam,Male,2004-01-14,CG03
+6,SV006,Nguyen Thi Lan,Female,2004-07-10,CG03
+7,SV007,Pham Van Duc,Male,2003-04-30,CG01
+8,SV008,Le Thi Hoa,Female,2002-11-20,CG02
+9,SV009,Tran Van Hieu,Male,2003-09-15,CG03
+10,SV010,Nguyen Thi Mai,Female,2004-06-03,CG01
