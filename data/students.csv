@@ -9,3 +9,8 @@ id,studentCode,fullName,gender,birthDate,classGroupId
 8,SV008,Le Thi Hoa,Female,2002-11-20,CG02
 9,SV009,Tran Van Hieu,Male,2003-09-15,CG03
 10,SV010,Nguyen Thi Mai,Female,2004-06-03,CG01
+11,SV011,Hoang Van Phuc,Male,2002-08-09,CG02
+12,SV012,Doan Thi Quynh,Female,2003-02-11,CG03
+13,SV013,Le Hoang Nam,Male,2003-07-22,CG04
+14,SV014,Nguyen Thi Kim,Female,2004-03-15,CG04
+15,SV015,Pham Van Tuan,Male,2002-10-17,CG05
