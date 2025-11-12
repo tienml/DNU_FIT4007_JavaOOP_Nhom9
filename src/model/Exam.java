@@ -1,12 +1,16 @@
 package model;
 
-/**
- * Exam (mid/final).
- * TODO:
- *  - Thuộc tính isFinal
- *  - weight = wMid nếu !isFinal, ngược lại wFinal
- */
 public class Exam extends Assessment {
-    private boolean isFinal;
-    @Override public double weight(Course c){ return 0; /* TODO */ }
+
+    public Exam() {
+        super();
+    }
+
+    public Exam(String name, double weight, Double score) {
+        super(name, weight, score);
+    }
+
+    public String getType() {
+        return "Exam";
+    }
 }
