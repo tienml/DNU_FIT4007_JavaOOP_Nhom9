@@ -6,40 +6,31 @@ import model.Grade;
 
 public class scoringService {
 
-    public double calcTotal(Course c, Grade g) throws invalidScoreException {
-        double wQuiz = c.getwQuiz();
-        double wMid = c.getwMid();
-        double wFinal = c.getwFinal();
-        double wProject = c.getwProject();
+    public double calculateTotal(Course c, Grade g) throws invalidScoreException {
+        if (c == null || g == null)
+            throw new invalidScoreException("Course hoặc Grade bị null.");
 
-        double sum = wQuiz + wMid + wFinal + wProject;
-        if (sum > 1.0 + 1e-6) {
-            throw new invalidScoreException("Tổng trọng số của học phần " + c.getCode() + " vượt quá 1.0");
-        }
+        double wq = c.getwQuiz();
+        double wm = c.getwMid();
+        double wf = c.getwFinal();
+        double wp = c.getwProject();
 
-        Double quiz = g.getQuiz();
-        Double mid = g.getMid();
-        Double fin = g.getFin();
-        Double proj = g.getProject();
+        double sumWeight = wq + wm + wf + wp;
+        if (Math.abs(sumWeight - 1.0) > 1e-6)
+            throw new invalidScoreException("Tổng trọng số phải bằng 1.0.");
 
-        if (!isValid(quiz) || !isValid(mid) || !isValid(fin) || !isValid(proj)) {
-            throw new invalidScoreException("Điểm thành phần phải nằm trong khoảng 0..10 hoặc null");
-        }
+        double q = safe(g.getQuiz());
+        double m = safe(g.getMid());
+        double f = safe(g.getFin());
+        double p = safe(g.getProject());
 
-        if (quiz == null || mid == null || fin == null) {
-            g.setTotal(null);
-            return 0;
-        }
-
-        double total = quiz * wQuiz + mid * wMid + fin * wFinal;
-        if (proj != null) total += proj * wProject;
-
+        double total = q * wq + m * wm + f * wf + p * wp;
         g.setTotal(total);
+
         return total;
     }
 
-    private boolean isValid(Double s) {
-        if (s == null) return true;
-        return s >= 0 && s <= 10;
+    private double safe(Double d) {
+        return d == null ? 0.0 : d;
     }
 }
