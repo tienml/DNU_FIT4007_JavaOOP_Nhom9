@@ -21,8 +21,8 @@ public class Grade {
     }
 
     public Grade(Student student, Course course) {
-        setStudent(student); // sẽ đồng bộ luôn studentId
-        setCourse(course);   // sẽ đồng bộ luôn courseId
+        setStudent(student);
+        setCourse(course);
     }
 
     public String getStudentId() {
