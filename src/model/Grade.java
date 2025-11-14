@@ -1,9 +1,9 @@
 package model;
-
 import exception.invalidScoreException;
 
-
 public class Grade {
+    private String studentId;
+    private String courseId;
     private Student student;
     private Course course;
     private Double quiz;
@@ -12,12 +12,35 @@ public class Grade {
     private Double project;
     private Double total;
 
-    public Grade() {}
+    public Grade() {
+    }
+
+    public Grade(String studentId, String courseId) {
+        this.studentId = studentId;
+        this.courseId = courseId;
+    }
 
     public Grade(Student student, Course course) {
-        this.student = student;
-        this.course = course;
+        setStudent(student);
+        setCourse(course);
     }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public String getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
+    }
+
 
     public Student getStudent() {
         return student;
@@ -25,6 +48,9 @@ public class Grade {
 
     public void setStudent(Student student) {
         this.student = student;
+        if (student != null) {
+            this.studentId = student.getId();
+        }
     }
 
     public Course getCourse() {
@@ -33,6 +59,9 @@ public class Grade {
 
     public void setCourse(Course course) {
         this.course = course;
+        if (course != null) {
+            this.courseId = course.getCode();
+        }
     }
 
     public Double getQuiz() {
@@ -88,9 +117,11 @@ public class Grade {
 
     @Override
     public String toString() {
+        String sName = student != null ? student.getFullName() : (studentId != null ? studentId : "N/A");
+        String cName = course != null ? course.getName() : (courseId != null ? courseId : "N/A");
         return String.format("%s - %s: [quiz=%.2f, mid=%.2f, final=%.2f, proj=%.2f, total=%.2f]",
-                student != null ? student.getFullName() : "N/A",
-                course != null ? course.getName() : "N/A",
+                sName,
+                cName,
                 quiz != null ? quiz : 0,
                 mid != null ? mid : 0,
                 fin != null ? fin : 0,
