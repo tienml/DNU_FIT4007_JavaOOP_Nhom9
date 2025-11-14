@@ -16,8 +16,6 @@ public class reportService {
         this.studentRepo = studentRepo;
         this.gradeService = new gradeService(gradeRepo);
     }
-
-    // Danh sách sinh viên có GPA cao nhất
     public List<Student> getTopGPAStudents() {
         double maxGPA = studentRepo.getAll().stream()
                 .mapToDouble(s -> gradeService.calculateGPA(s.getId()))
@@ -28,8 +26,6 @@ public class reportService {
                 .filter(s -> gradeService.calculateGPA(s.getId()) == maxGPA)
                 .toList();
     }
-
-    // Tỷ lệ các mức xếp loại
     public Map<String, Long> classifyStudents() {
         return studentRepo.getAll().stream()
                 .collect(Collectors.groupingBy(

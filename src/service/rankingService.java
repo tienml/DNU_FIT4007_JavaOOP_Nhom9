@@ -47,7 +47,6 @@ public class rankingService {
         return sortByGPA(filtered);
     }
 
-    // Xếp hạng toàn trường
     public List<Student> rankingSchool() {
         return sortByGPA(studentRepo.getAll());
     }
