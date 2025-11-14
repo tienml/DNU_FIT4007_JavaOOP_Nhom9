@@ -12,7 +12,8 @@ public class studentMenu {
             System.out.println("2. Sửa sinh viên");
             System.out.println("3. Xóa sinh viên");
             System.out.println("4. Tìm kiếm sinh viên theo tên");
-            System.out.println("5. Danh sách sinh viên");
+            System.out.println("5. Tìm kiếm sinh viên theo mã");
+            System.out.println("6. Danh sách sinh viên");
             System.out.println("0. Quay lại");
             System.out.print("Chọn: ");
 
@@ -22,7 +23,8 @@ public class studentMenu {
                 case "2" -> System.out.println("→ Sửa sinh viên...");
                 case "3" -> System.out.println("→ Xóa sinh viên...");
                 case "4" -> System.out.println("→ Tìm kiếm mờ theo tên (SearchService)...");
-                case "5" -> System.out.println("→ Hiển thị danh sách sinh viên...");
+                case "5" -> System.out.println("Tìm theo mã...");
+                case "6" -> System.out.println("→ Hiển thị danh sách sinh viên...");
                 case "0" -> { return; }
                 default -> System.out.println("Lựa chọn không hợp lệ!");
             }
