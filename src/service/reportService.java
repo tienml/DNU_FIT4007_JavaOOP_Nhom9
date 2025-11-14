@@ -1,56 +1,48 @@
 package service;
 
 import model.Student;
+import model.Grade;
 import repository.studentRepository;
+import repository.gradeRepository;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class reportService {
+    private final studentRepository studentRepo;
+    private final gradeService gradeService;
 
-    private studentRepository studentRepo;
-
-    public reportService(studentRepository repo) {
-        this.studentRepo = repo;
+    public reportService(studentRepository studentRepo, gradeRepository gradeRepo) {
+        this.studentRepo = studentRepo;
+        this.gradeService = new gradeService(gradeRepo);
     }
-    public void reportAverageScore() {
-        List<Student> students = studentRepo.getAll();
-        System.out.println("\n--- BÁO CÁO ĐIỂM TRUNG BÌNH ---");
-        System.out.printf("%-5s %-20s %-10s %-5s%n", "STT", "Họ Tên", "Lớp", "Điểm TB");
 
-        int index = 1;
-        for (Student s : students) {
-            System.out.printf("%-5d %-20s %-10s %-5.2f%n",
-                    index++, s.getFullName(), s.getClass(), s.getGPA());
-        }
+    // Danh sách sinh viên có GPA cao nhất
+    public List<Student> getTopGPAStudents() {
+        double maxGPA = studentRepo.getAll().stream()
+                .mapToDouble(s -> gradeService.calculateGPA(s.getId()))
+                .max()
+                .orElse(0);
+
+        return studentRepo.getAll().stream()
+                .filter(s -> gradeService.calculateGPA(s.getId()) == maxGPA)
+                .toList();
     }
-    public void reportByClass(String className) {
-        List<Student> students = studentRepo.getAll();
-        System.out.println("\n--- BÁO CÁO SINH VIÊN LỚP: " + className + " ---");
-        System.out.printf("%-5s %-20s %-10s %-5s%n", "STT", "Họ Tên", "Lớp", "Điểm TB");
 
-        int index = 1;
-        for (Student s : students) {
-            if (s.getClass().equals(className)) {
-                System.out.printf("%-5d %-20s %-10s %-5.2f%n",
-                        index++, s.getFullName(), s.getClass(), s.getGPA());
-            }
-        }
+    // Tỷ lệ các mức xếp loại
+    public Map<String, Long> classifyStudents() {
+        return studentRepo.getAll().stream()
+                .collect(Collectors.groupingBy(
+                        s -> classify(gradeService.calculateGPA(s.getId())),
+                        Collectors.counting()
+                ));
     }
-    public void exportReport(String fileName) {
-        List<Student> students = studentRepo.getAll();
 
-        try (FileWriter writer = new FileWriter(fileName)) {
-            writer.write("STT,Họ Tên,Lớp,Điểm TB\n");
-            int index = 1;
-            for (Student s : students) {
-                writer.write(String.format("%d,%s,%s,%.2f\n",
-                        index++, s.getFullName(), s.getClass(), s.getGPA()));
-            }
-            System.out.println("→ Xuất báo cáo thành công: " + fileName);
-        } catch (IOException e) {
-            System.out.println("→ Lỗi khi xuất file: " + e.getMessage());
-        }
+    private String classify(double gpa) {
+        if (gpa >= 8.5) return "Xuất sắc";
+        if (gpa >= 7.0) return "Giỏi";
+        if (gpa >= 5.5) return "Khá";
+        if (gpa >= 4.0) return "Trung bình";
+        return "Yếu";
     }
 }

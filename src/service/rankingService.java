@@ -1,52 +1,54 @@
 package service;
 
 import model.Student;
-import model.Grade;
 import repository.studentRepository;
+import repository.gradeRepository;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class rankingService {
+    private final studentRepository studentRepo;
+    private final gradeRepository gradeRepo;
+    private final gradeService gradeService;
 
-    private studentRepository studentRepo;
-
-    public rankingService(studentRepository repo) {
-        this.studentRepo = repo;
+    public rankingService(studentRepository studentRepo, gradeRepository gradeRepo) {
+        this.studentRepo = studentRepo;
+        this.gradeRepo = gradeRepo;
+        this.gradeService = new gradeService(gradeRepo);
     }
-    public void rankByGPA() {
-        List<Student> students = studentRepo.getAll();
-        students.sort(Comparator.comparingDouble(Student::getGPA).reversed());
+    private List<Student> sortByGPA(List<Student> students) {
+        Map<String, Double> gpaCache = new HashMap<>();
 
-        System.out.println("\n--- BẢNG XẾP HẠNG THEO GPA ---");
-        System.out.printf("%-5s %-20s %-5s%n", "STT", "Họ Tên", "GPA");
-        int rank = 1;
         for (Student s : students) {
-            System.out.printf("%-5d %-20s %-5.2f%n", rank++, s.getFullName(), s.getGPA());
+            gpaCache.put(s.getId(), gradeService.calculateGPA(s.getId()));
         }
-    }
-    public void rankByCourse(String courseName) {
-        List<Student> students = studentRepo.getAll();
-        students.sort((s1, s2) -> Double.compare(
-                getGradeByCourse(s2, courseName),
-                getGradeByCourse(s1, courseName)
-        ));
 
-        System.out.println("\n--- BẢNG XẾP HẠNG HỌC PHẦN: " + courseName + " ---");
-        System.out.printf("%-5s %-20s %-5s%n", "STT", "Họ Tên", "Điểm");
-        int rank = 1;
-        for (Student s : students) {
-            double grade = getGradeByCourse(s, courseName);
-            System.out.printf("%-5d %-20s %-5.2f%n", rank++, s.getFullName(), grade);
-        }
+        return students.stream()
+                .sorted((a, b) -> Double.compare(
+                        gpaCache.get(b.getId()),
+                        gpaCache.get(a.getId())
+                ))
+                .toList();
     }
 
-    private double getGradeByCourse(Student s, String courseName) {
-        for (Grade g : s.getGrades()) {
-            if (g.getCourse().equals(courseName)) {
-                return g.getMid();
-            }
-        }
-        return 0.0;
+    public List<Student> rankingByClass(String className) {
+        List<Student> filtered = studentRepo.getAll().stream()
+                .filter(s -> s.getClassName().equalsIgnoreCase(className))
+                .toList();
+
+        return sortByGPA(filtered);
+    }
+
+    public List<Student> rankingByFaculty(String faculty) {
+        List<Student> filtered = studentRepo.getAll().stream()
+                .filter(s -> s.getMajor().equalsIgnoreCase(faculty))
+                .toList();
+
+        return sortByGPA(filtered);
+    }
+
+    // Xếp hạng toàn trường
+    public List<Student> rankingSchool() {
+        return sortByGPA(studentRepo.getAll());
     }
 }

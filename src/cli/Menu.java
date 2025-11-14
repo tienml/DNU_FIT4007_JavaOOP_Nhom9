@@ -1,93 +1,60 @@
 package cli;
 
+import repository.*;
+import service.*;
+
 import java.util.Scanner;
 
 public class Menu {
-    private Scanner scanner;
-    private courseMenu courseMenu;
-    private studentMenu studentMenu;
-    private gradeMenu gradeMenu;
-    private rankingMenu rankingMenu;
-    private reportMenu reportMenu;
+    private Scanner scanner = new Scanner(System.in);
 
-    public Menu() {
-        scanner = new Scanner(System.in);
-        courseMenu = new courseMenu();
-        studentMenu = new studentMenu();
-        gradeMenu = new gradeMenu();
-        rankingMenu = new rankingMenu();
-        reportMenu = new reportMenu();
-    }
+    private studentRepository studentRepo = new studentRepository("students.csv");
+    private courseRepository courseRepo = new courseRepository("courses.csv");
+    private gradeRepository gradeRepo = new gradeRepository("grades.csv");
 
-    public void displayMainMenu() {
+    private courseService courseService = new courseService(courseRepo);
+    private studentService studentService = new studentService(studentRepo);
+    private gradeService gradeService = new gradeService(gradeRepo);
+    private rankingService rankingService = new rankingService(studentRepo, gradeRepo);
+    private reportService reportService = new reportService(studentRepo, gradeRepo);
+
+    private courseMenu courseMenu = new courseMenu();
+    private studentMenu studentMenu = new studentMenu();
+    private gradeMenu gradeMenu = new gradeMenu();
+    private rankingMenu rankingMenu = new rankingMenu();
+    private reportMenu reportMenu = new reportMenu();
+
+    public void run() {
         while (true) {
-            clearScreen();
-            printHeader();
-            printMenuOptions();
+            System.out.println("\n===== HỆ THỐNG QUẢN LÝ ĐIỂM SINH VIÊN =====");
+            System.out.println("1. Quản lý học phần");
+            System.out.println("2. Quản lý sinh viên");
+            System.out.println("3. Nhập / chỉnh sửa điểm");
+            System.out.println("4. Bảng xếp hạng");
+            System.out.println("5. Báo cáo thống kê");
+            System.out.println("0. Thoát");
+            System.out.print("Chọn: ");
 
-            try {
-                int choice = getUserChoice();
-                handleMenuChoice(choice);
-            } catch (NumberFormatException e) {
-                showError("Vui lòng nhập số!");
-                pause();
-            } catch (Exception e) {
-                showError("Có lỗi xảy ra: " + e.getMessage());
-                pause();
+            String c = scanner.nextLine().trim();
+            switch (c) {
+                case "1" -> courseMenu.display();
+                case "2" -> studentMenu.display();
+                case "3" -> gradeMenu.display();
+                case "4" -> rankingMenu.display();
+                case "5" -> reportMenu.display();
+                case "0" -> {
+                    System.out.println("→ Lưu dữ liệu & thoát...");
+                    studentRepo.save();
+                    courseRepo.save();
+                    gradeRepo.save();
+                    return;
+                }
+                default -> System.out.println("Lựa chọn không hợp lệ!");
             }
         }
     }
 
-    private void printHeader() {
-        System.out.println("=== HỆ THỐNG QUẢN LÝ ĐIỂM SINH VIÊN ===");
-    }
+    public void display() {
 
-    private void printMenuOptions() {
-        System.out.println("1. Quản lý học phần");
-        System.out.println("2. Quản lý sinh viên");
-        System.out.println("3. Quản lý điểm");
-        System.out.println("4. Bảng xếp hạng");
-        System.out.println("5. Báo cáo thống kê");
-        System.out.println("0. Thoát");
-        System.out.print("Chọn chức năng: ");
-    }
-
-    private int getUserChoice() {
-        return Integer.parseInt(scanner.nextLine().trim());
-    }
-
-    private void handleMenuChoice(int choice) {
-        switch (choice) {
-            case 1 -> courseMenu.display();
-            case 2 -> studentMenu.display();
-            case 3 -> gradeMenu.display();
-            case 4 -> rankingMenu.display();
-            case 5 -> reportMenu.display();
-            case 0 -> exitProgram();
-            default -> {
-                showError("Lựa chọn không hợp lệ!");
-                pause();
-            }
-        }
-    }
-
-    private void exitProgram() {
-        clearScreen();
-        System.out.println("Cảm ơn bạn đã sử dụng hệ thống!");
-        System.exit(0);
-    }
-
-    private void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-    }
-
-    private void pause() {
-        System.out.println("\nNhấn Enter để tiếp tục...");
-        scanner.nextLine();
-    }
-
-    private void showError(String msg) {
-        System.out.println("\n" + msg);
     }
 }
