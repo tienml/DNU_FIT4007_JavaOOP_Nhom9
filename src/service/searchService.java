@@ -8,13 +8,19 @@ import java.util.List;
 
 public class searchService {
 
-    private studentRepository studentRepo;
+    private final studentRepository studentRepo;
 
     public searchService(studentRepository repo) {
         this.studentRepo = repo;
     }
+
     public Student searchById(String studentId) {
-        for (Student s : studentRepo.getAll()) {
+        if (studentId == null || studentId.isEmpty()) return null;
+
+        List<Student> students = studentRepo.getAll();
+        if (students == null || students.isEmpty()) return null;
+
+        for (Student s : students) {
             if (s.getId().equalsIgnoreCase(studentId)) {
                 return s;
             }
@@ -23,8 +29,16 @@ public class searchService {
     }
     public List<Student> searchByName(String name) {
         List<Student> result = new ArrayList<>();
-        for (Student s : studentRepo.getAll()) {
-            if (s.getFullName().toLowerCase().contains(name.toLowerCase())) {
+
+        if (name == null || name.trim().isEmpty()) return result;
+
+        List<Student> students = studentRepo.getAll();
+        if (students == null || students.isEmpty()) return result;
+
+        String keyword = name.toLowerCase();
+
+        for (Student s : students) {
+            if (s.getFullName().toLowerCase().contains(keyword)) {
                 result.add(s);
             }
         }
