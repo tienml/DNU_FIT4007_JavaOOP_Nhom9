@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class courseMenu {
-    private final Scanner scanner = new Scanner(System.in);
     private final courseService service;
+    private final Scanner scanner;
 
-    public courseMenu(courseService service) {
+    public courseMenu(courseService service, Scanner scanner) {
         this.service = service;
+        this.scanner = scanner;
     }
 
     public void display() {
@@ -20,25 +21,26 @@ public class courseMenu {
             System.out.println("1. Thêm môn học");
             System.out.println("2. Sửa môn học");
             System.out.println("3. Xóa môn học");
-            System.out.println("4. Xem danh sách");
+            System.out.println("4. Xem danh sách môn học");
             System.out.println("0. Quay lại");
             System.out.print("Chọn: ");
+            String choice = scanner.nextLine().trim();
 
-            switch (scanner.nextLine().trim()) {
-                case "1" -> add();
-                case "2" -> edit();
-                case "3" -> delete();
-                case "4" -> listAll();
+            switch (choice) {
+                case "1" -> addCourse();
+                case "2" -> editCourse();
+                case "3" -> deleteCourse();
+                case "4" -> listCourses();
                 case "0" -> { return; }
                 default -> System.out.println("Sai lựa chọn!");
             }
         }
     }
 
-    private void add() {
+    private void addCourse() {
         System.out.print("Mã môn học: ");
         String code = scanner.nextLine().trim();
-        System.out.print("Tên môn học: ");
+        System.out.print("Tên môn: ");
         String name = scanner.nextLine().trim();
         System.out.print("Số tín chỉ: ");
         int credit = Integer.parseInt(scanner.nextLine().trim());
@@ -53,26 +55,21 @@ public class courseMenu {
 
         Course c = new Course(code, name, credit, wq, wm, wf, wp);
         if (service.addCourse(c)) System.out.println("→ Thêm thành công!");
-        else System.out.println("→ Không thể thêm môn học!");
+        else System.out.println("→ Mã môn đã tồn tại!");
     }
 
-    private void edit() {
-        System.out.print("Mã môn học cần sửa: ");
+    private void editCourse() {
+        System.out.print("Mã môn cần sửa: ");
         String code = scanner.nextLine().trim();
-
-        Course existing = service.getAll().stream()
-                .filter(c -> c.getCode().equalsIgnoreCase(code))
+        Course c = service.getAll().stream()
+                .filter(x -> x.getCode().equalsIgnoreCase(code))
                 .findFirst().orElse(null);
-
-        if (existing == null) {
-            System.out.println("→ Không tìm thấy môn học!");
-            return;
-        }
+        if (c == null) { System.out.println("→ Không tìm thấy!"); return; }
 
         System.out.print("Tên mới: ");
-        existing.setName(scanner.nextLine().trim());
-        System.out.print("Số tín chỉ mới: ");
-        existing.setCredit(Integer.parseInt(scanner.nextLine().trim()));
+        c.setName(scanner.nextLine().trim());
+        System.out.print("Số tín chỉ: ");
+        c.setCredit(Integer.parseInt(scanner.nextLine().trim()));
         System.out.print("Trọng số Quiz: ");
         double wq = Double.parseDouble(scanner.nextLine().trim());
         System.out.print("Trọng số Mid: ");
@@ -81,29 +78,27 @@ public class courseMenu {
         double wf = Double.parseDouble(scanner.nextLine().trim());
         System.out.print("Trọng số Project: ");
         double wp = Double.parseDouble(scanner.nextLine().trim());
-        existing.setWeights(wq, wm, wf, wp);
+        c.setWeights(wq, wm, wf, wp);
 
-        if (service.updateCourse(code, existing)) System.out.println("→ Sửa thành công!");
-        else System.out.println("→ Không thể sửa môn học!");
+        service.updateCourse(code, c);
+        System.out.println("→ Sửa thành công!");
     }
 
-    private void delete() {
-        System.out.print("Mã môn học cần xóa: ");
+    private void deleteCourse() {
+        System.out.print("Mã môn cần xóa: ");
         String code = scanner.nextLine().trim();
-
         if (service.deleteCourse(code)) System.out.println("→ Xóa thành công!");
-        else System.out.println("→ Không tìm thấy môn học!");
+        else System.out.println("→ Không tìm thấy!");
     }
 
-    private void listAll() {
+    private void listCourses() {
         List<Course> list = service.getAll();
-        if (list.isEmpty()) {
-            System.out.println("→ Không có môn học!");
-            return;
-        }
-        int i = 1;
-        for (Course c : list) {
-            System.out.println(i++ + ". " + c);
+        if (list.isEmpty()) System.out.println("→ Chưa có môn học nào!");
+        else {
+            System.out.println("--- Danh sách môn học ---");
+            for (Course c : list) {
+                System.out.printf("%s - %s - %d TC%n", c.getCode(), c.getName(), c.getCredit());
+            }
         }
     }
 }

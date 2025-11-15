@@ -2,123 +2,87 @@ package cli;
 
 import model.Course;
 import model.Grade;
-import repository.courseRepository;
-import repository.gradeRepository;
+import model.Student;
 import service.scoringService;
+import service.studentService;
+import service.courseService;
 
-import java.util.List;
 import java.util.Scanner;
 
 public class gradeMenu {
+    private final scoringService scoring;
+    private final studentService studentService;
+    private final courseService courseService;
     private final Scanner scanner;
-    private final scoringService scoringService;
-    private final gradeRepository gradeRepo;
-    private final courseRepository courseRepo;
 
-    public gradeMenu(scoringService scoringService, gradeRepository gradeRepo, courseRepository courseRepo) {
-        this.scanner = new Scanner(System.in);
-        this.scoringService = scoringService;
-        this.gradeRepo = gradeRepo;
-        this.courseRepo = courseRepo;
+    public gradeMenu(scoringService scoring, studentService studentService,
+                     courseService courseService, Scanner scanner) {
+        this.scoring = scoring;
+        this.studentService = studentService;
+        this.courseService = courseService;
+        this.scanner = scanner;
     }
 
     public void display() {
         while (true) {
-            System.out.println("\n--- NHẬP ĐIỂM HỌC PHẦN ---");
-            System.out.println("1. Nhập điểm");
-            System.out.println("2. Sửa điểm");
-            System.out.println("3. Xem điểm sinh viên");
+            System.out.println("\n--- QUẢN LÝ ĐIỂM ---");
+            System.out.println("1. Nhập/Chỉnh sửa điểm");
+            System.out.println("2. Xem điểm sinh viên");
             System.out.println("0. Quay lại");
             System.out.print("Chọn: ");
+            String choice = scanner.nextLine().trim();
 
-            switch (scanner.nextLine()) {
-                case "1" -> input(false);
-                case "2" -> input(true);
-                case "3" -> view();
+            switch (choice) {
+                case "1" -> enterGrade();
+                case "2" -> viewGrades();
                 case "0" -> { return; }
                 default -> System.out.println("Sai lựa chọn!");
             }
         }
     }
 
-    private void input(boolean isEdit) {
+    private void enterGrade() {
         System.out.print("ID sinh viên: ");
         String sid = scanner.nextLine().trim();
+        Student s = studentService.findById(sid).orElse(null);
+        if (s == null) { System.out.println("→ Không tìm thấy sinh viên!"); return; }
 
-        System.out.print("Mã học phần: ");
+        System.out.print("Mã môn học: ");
         String cid = scanner.nextLine().trim();
+        Course c = courseService.getAll().stream()
+                .filter(x -> x.getCode().equalsIgnoreCase(cid))
+                .findFirst().orElse(null);
+        if (c == null) { System.out.println("→ Không tìm thấy môn học!"); return; }
 
-        Course c = courseRepo.findById(cid).orElse(null);
-        if (c == null) {
-            System.out.println("→ Không tìm thấy học phần!");
-            return;
-        }
+        Grade g = s.getGrades().stream()
+                .filter(x -> x.getCourse() == c)
+                .findFirst().orElse(new Grade(sid, cid));
 
-        double quiz = getScore("Quiz: ");
-        double mid = getScore("Giữa kỳ: ");
-        double fin = getScore("Cuối kỳ: ");
-        double project = getScore("Bài tập lớn: ");
+        System.out.print("Điểm Quiz: ");
+        g.setQuiz(Double.parseDouble(scanner.nextLine().trim()));
+        System.out.print("Điểm Mid: ");
+        g.setMid(Double.parseDouble(scanner.nextLine().trim()));
+        System.out.print("Điểm Final: ");
+        g.setFin(Double.parseDouble(scanner.nextLine().trim()));
+        System.out.print("Điểm Project: ");
+        g.setProject(Double.parseDouble(scanner.nextLine().trim()));
 
-        Grade g = gradeRepo.findById(sid + ":" + cid).orElse(new Grade());
-        g.setStudentId(sid);
-        g.setCourseId(cid);
-        g.setCourse(c);
-        g.setQuiz(quiz);
-        g.setMid(mid);
-        g.setFin(fin);
-        g.setProject(project);
-
-        try {
-            scoringService.calculateTotal(c, g);
-        } catch (Exception e) {
-            System.out.println("→ Lỗi tính tổng điểm: " + e.getMessage());
-            return;
-        }
-
-        boolean ok;
-        if (gradeRepo.findById(sid + ":" + cid).isPresent()) {
-            ok = gradeRepo.update(g);
-        } else {
-            ok = gradeRepo.add(g);
-        }
-
-        System.out.println(ok ? (isEdit ? "→ Cập nhật thành công!" : "→ Nhập điểm thành công!")
-                : "→ Không thể lưu điểm!");
+        scoring.calculateTotal(c, g);
+        s.addGrade(g);
+        System.out.println("→ Cập nhật thành công! Tổng: " + g.getTotal());
     }
 
-    private double getScore(String prompt) {
-        while (true) {
-            try {
-                System.out.print(prompt);
-                return Double.parseDouble(scanner.nextLine().trim());
-            } catch (NumberFormatException e) {
-                System.out.println("Vui lòng nhập số hợp lệ!");
-            }
-        }
-    }
-
-    private void view() {
-        System.out.print("Nhập ID sinh viên: ");
+    private void viewGrades() {
+        System.out.print("ID sinh viên: ");
         String sid = scanner.nextLine().trim();
+        Student s = studentService.findById(sid).orElse(null);
+        if (s == null) { System.out.println("→ Không tìm thấy sinh viên!"); return; }
 
-        List<Grade> grades = gradeRepo.getAll().stream()
-                .filter(g -> g.getStudentId().equals(sid))
-                .toList();
-
-        if (grades.isEmpty()) {
-            System.out.println("→ Sinh viên chưa có điểm!");
-            return;
-        }
-
-        System.out.println("\n--- DANH SÁCH ĐIỂM ---");
-        for (Grade g : grades) {
-            System.out.printf("HP: %s | Quiz: %.2f | Mid: %.2f | Fin: %.2f | Project: %.2f | Total: %.2f\n",
-                    g.getCourseId(),
-                    g.getQuiz(),
-                    g.getMid(),
-                    g.getFin(),
-                    g.getProject(),
-                    g.getTotal());
+        System.out.println("--- Điểm của sinh viên " + s.getFullName() + " ---");
+        for (Grade g : s.getGrades()) {
+            Course c = g.getCourse();
+            System.out.printf("%s - Quiz: %.2f, Mid: %.2f, Final: %.2f, Project: %.2f, Tổng: %.2f%n",
+                    c.getName(), g.getQuiz(), g.getMid(), g.getFin(), g.getProject(), g.getTotal());
         }
     }
 }

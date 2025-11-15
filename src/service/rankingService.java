@@ -12,14 +12,11 @@ public class rankingService {
     private final studentRepository studentRepo;
     private final gradeRepository gradeRepo; // thêm
 
-
-    // Constructor nhận cả 2 repository
     public rankingService(studentRepository studentRepo, gradeRepository gradeRepo) {
         this.studentRepo = studentRepo;
         this.gradeRepo = gradeRepo;
     }
 
-    // Các method ranking
     public List<Student> rankingByMajorAndYear(String major, int year) {
         return studentRepo.getAll().stream()
                 .filter(s -> s.getMajor().equalsIgnoreCase(major) && s.getYear() == year)
