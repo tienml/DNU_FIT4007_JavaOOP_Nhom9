@@ -6,12 +6,12 @@ import service.studentService;
 import java.util.Scanner;
 
 public class studentMenu {
+    private final Scanner scanner;
+    private final studentService service;
 
-    private Scanner scanner;
-    private studentService service;
-    public studentMenu() {
+    public studentMenu(studentService service) {
         this.service = service;
-        this.scanner = scanner;
+        this.scanner = new Scanner(System.in);
     }
 
     public void display() {
@@ -20,11 +20,11 @@ public class studentMenu {
             System.out.println("1. Thêm sinh viên");
             System.out.println("2. Sửa thông tin");
             System.out.println("3. Xóa sinh viên");
-            System.out.println("4. Tìm kiếm theo mã");
+            System.out.println("4. Tìm kiếm theo ID");
             System.out.println("0. Quay lại");
             System.out.print("Chọn: ");
 
-            switch (scanner.nextLine()) {
+            switch (scanner.nextLine().trim()) {
                 case "1" -> add();
                 case "2" -> edit();
                 case "3" -> delete();
@@ -37,15 +37,15 @@ public class studentMenu {
 
     private void add() {
         System.out.print("ID: ");
-        String id = scanner.nextLine();
+        String id = scanner.nextLine().trim();
         System.out.print("Họ tên: ");
-        String name = scanner.nextLine();
-        System.out.print("Lớp: ");
-        String className = scanner.nextLine();
-        System.out.print("Khoa: ");
-        String major = scanner.nextLine();
+        String name = scanner.nextLine().trim();
+        System.out.print("Ngành: ");
+        String major = scanner.nextLine().trim();
+        System.out.print("Năm: ");
+        int year = Integer.parseInt(scanner.nextLine().trim());
 
-        Student s = new Student(id, name, className, major);
+        Student s = new Student(id, name, major, year);
         if (service.addStudent(s))
             System.out.println("→ Thêm thành công!");
         else
@@ -54,22 +54,20 @@ public class studentMenu {
 
     private void edit() {
         System.out.print("ID sinh viên cần sửa: ");
-        String id = scanner.nextLine();
+        String id = scanner.nextLine().trim();
 
-        Student s = service.findById(id).orElse(null);
+        var s = service.findById(id).orElse(null);
         if (s == null) {
             System.out.println("→ Không tìm thấy!");
             return;
         }
 
         System.out.print("Tên mới: ");
-        s.setName(scanner.nextLine().trim());
-
-        System.out.print("Lớp mới: ");
-        s.setClassName(scanner.nextLine().trim());
-
-        System.out.print("Khoa mới: ");
+        s.setFullName(scanner.nextLine().trim());
+        System.out.print("Ngành mới: ");
         s.setMajor(scanner.nextLine().trim());
+        System.out.print("Năm mới: ");
+        s.setYear(Integer.parseInt(scanner.nextLine().trim()));
 
         service.updateStudent(s);
         System.out.println("→ Sửa thành công!");
@@ -77,7 +75,7 @@ public class studentMenu {
 
     private void delete() {
         System.out.print("Nhập ID để xóa: ");
-        String id = scanner.nextLine();
+        String id = scanner.nextLine().trim();
 
         if (service.deleteStudent(id))
             System.out.println("→ Xóa thành công!");
@@ -87,17 +85,18 @@ public class studentMenu {
 
     private void find() {
         System.out.print("Nhập ID: ");
-        String id = scanner.nextLine();
+        String id = scanner.nextLine().trim();
 
-        Student s = service.findById(id).orElse(null);
+        var s = service.findById(id).orElse(null);
         if (s == null) {
             System.out.println("→ Không tìm thấy!");
             return;
         }
 
         System.out.println("ID: " + s.getId());
-        System.out.println("Tên: " + s.getName());
-        System.out.println("Lớp: " + s.getClass());
-        System.out.println("Khoa: " + s.getMajor());
+        System.out.println("Tên: " + s.getFullName());
+        System.out.println("Ngành: " + s.getMajor());
+        System.out.println("Năm: " + s.getYear());
+        System.out.printf("GPA: %.2f\n", s.calculateGPA());
     }
 }

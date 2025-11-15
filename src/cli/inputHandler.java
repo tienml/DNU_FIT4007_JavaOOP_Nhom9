@@ -20,4 +20,15 @@ public class inputHandler {
             }
         }
     }
+
+    public static double getDouble(String message) {
+        while (true) {
+            try {
+                System.out.print(message);
+                return Double.parseDouble(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Vui lòng nhập số hợp lệ!");
+            }
+        }
+    }
 }

@@ -1,44 +1,40 @@
 package service;
 
+import cli.reportGenerator;
 import model.Student;
-import model.Grade;
 import repository.studentRepository;
-import repository.gradeRepository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class reportService {
     private final studentRepository studentRepo;
-    private final gradeService gradeService;
+    private final reportGenerator generator = new reportGenerator();
+    private final classificationService classifier = new classificationService();
 
-    public reportService(studentRepository studentRepo, gradeRepository gradeRepo) {
+    public reportService(studentRepository studentRepo) {
         this.studentRepo = studentRepo;
-        this.gradeService = new gradeService(gradeRepo);
     }
+
     public List<Student> getTopGPAStudents() {
         double maxGPA = studentRepo.getAll().stream()
-                .mapToDouble(s -> gradeService.calculateGPA(s.getId()))
-                .max()
-                .orElse(0);
-
+                .mapToDouble(Student::calculateGPA)
+                .max().orElse(0);
         return studentRepo.getAll().stream()
-                .filter(s -> gradeService.calculateGPA(s.getId()) == maxGPA)
-                .toList();
+                .filter(s -> Math.abs(s.calculateGPA() - maxGPA) < 1e-6)
+                .collect(Collectors.toList());
     }
-    public Map<String, Long> classifyStudents() {
+
+    public Map<String, Long> getClassificationStatistics() {
         return studentRepo.getAll().stream()
                 .collect(Collectors.groupingBy(
-                        s -> classify(gradeService.calculateGPA(s.getId())),
+                        s -> classifier.classify(s.calculateGPA()),
                         Collectors.counting()
                 ));
     }
 
-    private String classify(double gpa) {
-        if (gpa >= 8.5) return "Xuất sắc";
-        if (gpa >= 7.0) return "Giỏi";
-        if (gpa >= 5.5) return "Khá";
-        if (gpa >= 4.0) return "Trung bình";
-        return "Yếu";
+    public void exportReportToFile(String path) {
+        generator.exportReportToFile(path, studentRepo.getAll());
     }
 }

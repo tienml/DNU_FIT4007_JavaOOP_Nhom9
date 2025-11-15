@@ -17,28 +17,19 @@ public class searchService {
     public Student searchById(String studentId) {
         if (studentId == null || studentId.isEmpty()) return null;
 
-        List<Student> students = studentRepo.getAll();
-        if (students == null || students.isEmpty()) return null;
-
-        for (Student s : students) {
-            if (s.getId().equalsIgnoreCase(studentId)) {
-                return s;
-            }
-        }
-        return null;
+        return studentRepo.getAll().stream()
+                .filter(s -> s.getId().equalsIgnoreCase(studentId))
+                .findFirst().orElse(null);
     }
+
     public List<Student> searchByName(String name) {
-        List<Student> result = new ArrayList<>();
-
-        if (name == null || name.trim().isEmpty()) return result;
-
-        List<Student> students = studentRepo.getAll();
-        if (students == null || students.isEmpty()) return result;
+        if (name == null || name.trim().isEmpty()) return new ArrayList<>();
 
         String keyword = name.toLowerCase();
 
-        for (Student s : students) {
-            if (s.getFullName().toLowerCase().contains(keyword)) {
+        List<Student> result = new ArrayList<>();
+        for (Student s : studentRepo.getAll()) {
+            if (s.getFullName() != null && s.getFullName().toLowerCase().contains(keyword)) {
                 result.add(s);
             }
         }
