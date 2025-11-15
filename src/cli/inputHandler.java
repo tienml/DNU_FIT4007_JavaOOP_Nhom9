@@ -16,7 +16,7 @@ public class inputHandler {
                 System.out.print(message);
                 return Integer.parseInt(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println("Vui lòng nhập số hợp lệ!");
+                System.out.println("→ Vui lòng nhập số hợp lệ!");
             }
         }
     }
@@ -27,7 +27,7 @@ public class inputHandler {
                 System.out.print(message);
                 return Double.parseDouble(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println("Vui lòng nhập số hợp lệ!");
+                System.out.println("→ Vui lòng nhập số hợp lệ!");
             }
         }
     }
