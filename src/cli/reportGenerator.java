@@ -13,11 +13,16 @@ public class reportGenerator {
         }
 
         try (FileWriter writer = new FileWriter(fileName)) {
-            writer.write("STT,Họ Tên,Lớp,Khoa,GPA\n");
+            writer.write("STT,Họ Tên,Ngành,Năm,GPA\n");
             int index = 1;
             for (Student s : students) {
-                writer.write(String.format("%d,%s,%s,%s,%.2f\n",
-                        index++, s.getFullName(), s.getClass(), s.getMajor(), s.getGrades()));
+                writer.write(String.format("%d,%s,%s,%d,%.2f\n",
+                        index++,
+                        s.getFullName(),
+                        s.getMajor(),
+                        s.getYear(),
+                        s.calculateGPA()
+                ));
             }
             System.out.println("→ Xuất báo cáo thành công: " + fileName);
         } catch (IOException e) {
@@ -25,4 +30,3 @@ public class reportGenerator {
         }
     }
 }
-

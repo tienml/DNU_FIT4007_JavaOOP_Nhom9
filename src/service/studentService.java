@@ -14,9 +14,7 @@ public class studentService {
     }
 
     public boolean addStudent(Student s) {
-        if (repo.findById(s.getId()).isPresent()) return false;
-        repo.add(s);
-        return true;
+        return repo.add(s);
     }
 
     public boolean updateStudent(Student s) {
@@ -29,14 +27,6 @@ public class studentService {
 
     public Optional<Student> findById(String id) {
         return repo.findById(id);
-    }
-
-    public List<Student> search(String keyword) {
-        keyword = keyword.toLowerCase();
-        return repo.getAll().stream()
-                .filter(s -> s.getId().toLowerCase().contains(keyword)
-                        || s.getFullName().toLowerCase().contains(keyword))
-                .toList();
     }
 
     public List<Student> getAll() {

@@ -4,50 +4,39 @@ import model.Student;
 import repository.studentRepository;
 import repository.gradeRepository;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class rankingService {
     private final studentRepository studentRepo;
-    private final gradeRepository gradeRepo;
-    private final gradeService gradeService;
+    private final gradeRepository gradeRepo; // thêm
 
+
+    // Constructor nhận cả 2 repository
     public rankingService(studentRepository studentRepo, gradeRepository gradeRepo) {
         this.studentRepo = studentRepo;
         this.gradeRepo = gradeRepo;
-        this.gradeService = new gradeService(gradeRepo);
-    }
-    private List<Student> sortByGPA(List<Student> students) {
-        Map<String, Double> gpaCache = new HashMap<>();
-
-        for (Student s : students) {
-            gpaCache.put(s.getId(), gradeService.calculateGPA(s.getId()));
-        }
-
-        return students.stream()
-                .sorted((a, b) -> Double.compare(
-                        gpaCache.get(b.getId()),
-                        gpaCache.get(a.getId())
-                ))
-                .toList();
     }
 
-    public List<Student> rankingByClass(String className) {
-        List<Student> filtered = studentRepo.getAll().stream()
-                .filter(s -> s.getClassName().equalsIgnoreCase(className))
-                .toList();
-
-        return sortByGPA(filtered);
+    // Các method ranking
+    public List<Student> rankingByMajorAndYear(String major, int year) {
+        return studentRepo.getAll().stream()
+                .filter(s -> s.getMajor().equalsIgnoreCase(major) && s.getYear() == year)
+                .sorted(Comparator.comparingDouble(Student::calculateGPA).reversed())
+                .collect(Collectors.toList());
     }
 
-    public List<Student> rankingByFaculty(String faculty) {
-        List<Student> filtered = studentRepo.getAll().stream()
-                .filter(s -> s.getMajor().equalsIgnoreCase(faculty))
-                .toList();
-
-        return sortByGPA(filtered);
+    public List<Student> rankingByMajor(String major) {
+        return studentRepo.getAll().stream()
+                .filter(s -> s.getMajor().equalsIgnoreCase(major))
+                .sorted(Comparator.comparingDouble(Student::calculateGPA).reversed())
+                .collect(Collectors.toList());
     }
 
     public List<Student> rankingSchool() {
-        return sortByGPA(studentRepo.getAll());
+        return studentRepo.getAll().stream()
+                .sorted(Comparator.comparingDouble(Student::calculateGPA).reversed())
+                .collect(Collectors.toList());
     }
 }
