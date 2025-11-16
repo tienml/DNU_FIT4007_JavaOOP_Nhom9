@@ -9,6 +9,6 @@ public class IDGenerator {
     }
 
     public static String nextId(String prefix, int number) {
-        return prefix + String.format("%04d", number);
+        return prefix + String.format("%03d", number);
     }
 }

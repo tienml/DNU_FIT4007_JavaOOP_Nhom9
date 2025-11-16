@@ -1,9 +1,11 @@
 package repository;
 
+import iface.Persistable;
 import java.io.*;
 import java.util.*;
+import util.CSVUtils;
 
-public abstract class baseRepository<T> {
+public abstract class baseRepository<T> implements Persistable {
     protected final File file;
     protected final List<T> items = new ArrayList<>();
 
@@ -15,51 +17,43 @@ public abstract class baseRepository<T> {
     protected abstract String toCSV(T obj);
     protected abstract String[] getHeader();
     protected abstract String getId(T obj);
+
     protected String[] simpleSplit(String line) {
         return line.split(",", -1);
     }
 
+    @Override
     public void load() {
         items.clear();
+
         if (!file.exists()) {
             if (file.getParentFile() != null) file.getParentFile().mkdirs();
-            try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
-                String[] h = getHeader();
-                if (h != null && h.length > 0) pw.println(String.join(",", h));
-            } catch (IOException e) {
-                System.err.println("[baseRepository] create file error: " + e.getMessage());
-            }
+            save();
             return;
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            boolean first = true;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) continue;
-                if (first) { first = false; continue; } // skip header
-                String[] cols = simpleSplit(line);
-                T obj = fromCSV(cols);
-                if (obj != null) items.add(obj);
-            }
-        } catch (IOException e) {
-            System.err.println("[baseRepository] load error: " + e.getMessage());
+        List<String[]> rows = CSVUtils.read(file);
+        if (rows.isEmpty()) return;
+
+        boolean first = true;
+        for (String[] cols : rows) {
+            if (first) { first = false; continue; }
+            T obj = fromCSV(cols);
+            if (obj != null) items.add(obj);
         }
     }
 
+    @Override
     public void save() {
-        try {
-            if (file.getParentFile() != null) file.getParentFile().mkdirs();
-            try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
-                String[] h = getHeader();
-                if (h != null && h.length > 0) pw.println(String.join(",", h));
-                for (T obj : items) {
-                    pw.println(toCSV(obj));
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("[baseRepository] save error: " + e.getMessage());
+        List<String[]> rows = new ArrayList<>();
+        String[] header = getHeader();
+        if (header != null && header.length > 0) {
+            rows.add(header);
         }
+        for (T obj : items) {
+            rows.add(toCSV(obj).split(",", -1));
+        }
+        CSVUtils.write(file, rows);
     }
 
     public List<T> getAll() {

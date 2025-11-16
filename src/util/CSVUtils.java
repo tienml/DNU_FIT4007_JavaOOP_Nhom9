@@ -15,7 +15,7 @@ public class CSVUtils {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
-                rows.add(line.split(",", -1)); // tách theo dấu phẩy
+                rows.add(line.split(",", -1));
             }
         } catch (IOException e) {
             System.err.println("[CSVUtils] read error: " + e.getMessage());

@@ -1,6 +1,5 @@
 package model;
 
-
 public class Course {
     private String code;
     private String name;

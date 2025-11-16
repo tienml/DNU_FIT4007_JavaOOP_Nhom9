@@ -4,9 +4,6 @@ public class Group {
     private String id;
     private String name;
     private String faculty;
-
-    public Group() {}
-
     public Group(String id, String name, String faculty) {
         this.id = id;
         this.name = name;

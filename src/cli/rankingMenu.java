@@ -18,8 +18,8 @@ public class rankingMenu {
     public void display() {
         while (true) {
             System.out.println("\n--- BẢNG XẾP HẠNG ---");
-            System.out.println("1. Xếp hạng theo ngành và năm");
-            System.out.println("2. Xếp hạng theo ngành");
+            System.out.println("1. Xếp hạng theo lớp");
+            System.out.println("2. Xếp hạng theo khoa");
             System.out.println("3. Xếp hạng toàn trường");
             System.out.println("0. Quay lại");
             System.out.print("Chọn: ");
@@ -36,18 +36,16 @@ public class rankingMenu {
     }
 
     private void rankByMajorYear() {
-        System.out.print("Ngành: ");
-        String major = scanner.nextLine().trim();
-        System.out.print("Năm: ");
-        int year = Integer.parseInt(scanner.nextLine().trim());
-        List<Student> list = service.rankingByMajorAndYear(major, year);
+        System.out.print("Nhập mã lớp (VD: CG01): ");
+        String classId = scanner.nextLine().trim();
+        List<Student> list = service.rankingByClass(classId);
         printRanking(list);
     }
 
     private void rankByMajor() {
-        System.out.print("Ngành: ");
-        String major = scanner.nextLine().trim();
-        List<Student> list = service.rankingByMajor(major);
+        System.out.print("Nhập tên khoa (VD: Cong nghe thong tin): ");
+        String faculty = scanner.nextLine().trim();
+        List<Student> list = service.rankingByFaculty(faculty);
         printRanking(list);
     }
 

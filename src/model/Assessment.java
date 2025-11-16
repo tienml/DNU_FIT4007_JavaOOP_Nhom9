@@ -1,12 +1,9 @@
 package model;
 
-public class Assessment {
+public abstract class Assessment {
     private String name;
     private double weight;
     private Double score;
-
-    public Assessment() {}
-
     public Assessment(String name, double weight) {
         this.name = name;
         this.weight = weight;
@@ -18,10 +15,7 @@ public class Assessment {
         this.score = score;
     }
 
-    public String getName() {
-        return name;
-    }
-
+    public String getName() { return name; }
     public void setName(String name) {
         this.name = name;
     }
@@ -42,8 +36,11 @@ public class Assessment {
         this.score = score;
     }
 
+    public abstract String getType();
+
     @Override
     public String toString() {
-        return name + " (weight: " + weight + ", score: " + (score != null ? score : "not entered") + ")";
+        return getType() + ": " + name + " (weight: " + weight + ", score: "
+                + (score != null ? score : "not entered") + ")";
     }
 }

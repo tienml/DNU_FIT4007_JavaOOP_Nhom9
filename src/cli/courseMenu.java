@@ -40,22 +40,52 @@ public class courseMenu {
     private void addCourse() {
         System.out.print("Mã môn học: ");
         String code = scanner.nextLine().trim();
+
+        if (service.getAll().stream().anyMatch(course -> course.getCode().equalsIgnoreCase(code))) {
+            System.out.println("→ Mã môn học đã tồn tại!");
+            return;
+        }
+
         System.out.print("Tên môn: ");
         String name = scanner.nextLine().trim();
         System.out.print("Số tín chỉ: ");
-        int credit = Integer.parseInt(scanner.nextLine().trim());
+        int credit = 0;
+        try {
+            credit = Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("→ Vui lòng nhập số hợp lệ cho tín chỉ.");
+            return;
+        }
+
         System.out.print("Trọng số Quiz: ");
-        double wq = Double.parseDouble(scanner.nextLine().trim());
+        double wq = getValidWeightInput();
         System.out.print("Trọng số Mid: ");
-        double wm = Double.parseDouble(scanner.nextLine().trim());
+        double wm = getValidWeightInput();
         System.out.print("Trọng số Final: ");
-        double wf = Double.parseDouble(scanner.nextLine().trim());
+        double wf = getValidWeightInput();
         System.out.print("Trọng số Project: ");
-        double wp = Double.parseDouble(scanner.nextLine().trim());
+        double wp = getValidWeightInput();
 
         Course c = new Course(code, name, credit, wq, wm, wf, wp);
-        if (service.addCourse(c)) System.out.println("→ Thêm thành công!");
-        else System.out.println("→ Mã môn đã tồn tại!");
+        if (service.addCourse(c)) {
+            System.out.println("→ Thêm thành công!");
+        } else {
+            System.out.println("→ Mã môn học đã tồn tại!");
+        }
+    }
+
+    private double getValidWeightInput() {
+        double weight = 0.0;
+        try {
+            weight = Double.parseDouble(scanner.nextLine().trim());
+            if (weight < 0 || weight > 1) {
+                System.out.println("→ Trọng số phải trong khoảng từ 0 đến 1. Nhập lại!");
+                return getValidWeightInput();
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("→ Vui lòng nhập số hợp lệ cho trọng số.");
+        }
+        return weight;
     }
 
     private void editCourse() {
@@ -64,20 +94,31 @@ public class courseMenu {
         Course c = service.getAll().stream()
                 .filter(x -> x.getCode().equalsIgnoreCase(code))
                 .findFirst().orElse(null);
-        if (c == null) { System.out.println("→ Không tìm thấy!"); return; }
+        if (c == null) {
+            System.out.println("→ Không tìm thấy!");
+            return;
+        }
 
         System.out.print("Tên mới: ");
         c.setName(scanner.nextLine().trim());
         System.out.print("Số tín chỉ: ");
-        c.setCredit(Integer.parseInt(scanner.nextLine().trim()));
+        int credit = 0;
+        try {
+            credit = Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("→ Vui lòng nhập số hợp lệ cho tín chỉ.");
+            return;
+        }
+        c.setCredit(credit);
+
         System.out.print("Trọng số Quiz: ");
-        double wq = Double.parseDouble(scanner.nextLine().trim());
+        double wq = getValidWeightInput();
         System.out.print("Trọng số Mid: ");
-        double wm = Double.parseDouble(scanner.nextLine().trim());
+        double wm = getValidWeightInput();
         System.out.print("Trọng số Final: ");
-        double wf = Double.parseDouble(scanner.nextLine().trim());
+        double wf = getValidWeightInput();
         System.out.print("Trọng số Project: ");
-        double wp = Double.parseDouble(scanner.nextLine().trim());
+        double wp = getValidWeightInput();
         c.setWeights(wq, wm, wf, wp);
 
         service.updateCourse(code, c);
@@ -87,8 +128,11 @@ public class courseMenu {
     private void deleteCourse() {
         System.out.print("Mã môn cần xóa: ");
         String code = scanner.nextLine().trim();
-        if (service.deleteCourse(code)) System.out.println("→ Xóa thành công!");
-        else System.out.println("→ Không tìm thấy!");
+        if (service.deleteCourse(code)) {
+            System.out.println("→ Xóa thành công!");
+        } else {
+            System.out.println("→ Không tìm thấy!");
+        }
     }
 
     private void listCourses() {

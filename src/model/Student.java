@@ -1,13 +1,17 @@
 package model;
 
+import iface.Rankable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Student extends Person {
+public class Student extends Person implements Rankable {
     private String major;
     private int year;
+    private String rowId;
+    private String gender;
+    private String birthDate;
+    private String classGroupId;
     private List<Grade> grades;
-
     public Student(String id, String fullName, String major, int year) {
         super(id, fullName);
         this.major = major;
@@ -39,29 +43,67 @@ public class Student extends Person {
         return grades;
     }
 
-    public void setGrades(List<Grade> grades) {
-        this.grades = grades;
+    public String getRowId() {
+        return rowId;
+    }
+    public void setRowId(String rowId) {
+        this.rowId = rowId;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getBirthDate() {
+        return birthDate;
+    }
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getClassGroupId() {
+        return classGroupId;
+    }
+    public void setClassGroupId(String classGroupId) {
+        this.classGroupId = classGroupId;
     }
 
     public void addGrade(Grade g) {
         grades.add(g);
     }
+
+    @Override
     public double calculateGPA() {
         double totalWeightedScore = 0.0;
         double totalCredits = 0.0;
 
         for (Grade g : grades) {
             if (g.getTotal() != null && g.getCourse() != null) {
-                double score = g.getTotal();
-                double credit = g.getCourse().getCredit();
-                totalWeightedScore += score * credit;
-                totalCredits += credit;
+                double total10 = g.getTotal();
+                double total4  = convertTo4Scale(total10);
+                int credit     = g.getCourse().getCredit();
+
+                totalWeightedScore += total4 * credit;
+                totalCredits       += credit;
             }
         }
 
         if (totalCredits == 0) return 0.0;
-
         return totalWeightedScore / totalCredits;
+    }
+
+    private double convertTo4Scale(double total10) {
+        if (total10 >= 8.5) return 4.0;
+        if (total10 >= 7.8) return 3.5;
+        if (total10 >= 7.0) return 3.0;
+        if (total10 >= 6.3) return 2.5;
+        if (total10 >= 5.5) return 2.0;
+        if (total10 >= 4.8) return 1.5;
+        if (total10 >= 4.0) return 1.0;
+        return 0.0;
     }
 
     @Override

@@ -38,47 +38,67 @@ public class lecturerMenu {
     }
 
     private void addLecturer() {
-        System.out.print("ID: ");
-        String id = scanner.nextLine().trim();
         System.out.print("Họ tên: ");
         String name = scanner.nextLine().trim();
+
         System.out.print("Bộ môn: ");
         String dept = scanner.nextLine().trim();
+
         System.out.print("Email: ");
         String email = scanner.nextLine().trim();
 
-        Lecturer l = new Lecturer(id, name, dept, email);
-        if (service.addLecturer(l)) System.out.println("→ Thêm thành công!");
-        else System.out.println("→ ID đã tồn tại!");
+        Lecturer l = new Lecturer();
+        l.setFullName(name);
+        l.setDepartment(dept);
+        l.setEmail(email);
+
+        if (service.addLecturer(l)) {
+            System.out.println("→ Thêm giảng viên thành công!");
+        } else {
+            System.out.println("→ Mã giảng viên đã tồn tại!");
+        }
     }
 
     private void editLecturer() {
-        System.out.print("ID cần sửa: ");
+        System.out.print("ID giảng viên cần sửa: ");
         String id = scanner.nextLine().trim();
         Lecturer l = service.findById(id).orElse(null);
-        if (l == null) { System.out.println("→ Không tìm thấy!"); return; }
+        if (l == null) {
+            System.out.println("→ Không tìm thấy giảng viên!");
+            return;
+        }
 
-        System.out.print("Họ tên mới: ");
-        l.setFullName(scanner.nextLine().trim());
-        System.out.print("Bộ môn mới: ");
-        l.setDepartment(scanner.nextLine().trim());
-        System.out.print("Email mới: ");
-        l.setEmail(scanner.nextLine().trim());
+        System.out.print("Họ tên mới (để trống nếu giữ nguyên): ");
+        String name = scanner.nextLine().trim();
+        if (!name.isEmpty()) l.setFullName(name);
+
+        System.out.print("Bộ môn mới (để trống nếu giữ nguyên): ");
+        String dept = scanner.nextLine().trim();
+        if (!dept.isEmpty()) l.setDepartment(dept);
+
+        System.out.print("Email mới (để trống nếu giữ nguyên): ");
+        String email = scanner.nextLine().trim();
+        if (!email.isEmpty()) l.setEmail(email);
+
         service.updateLecturer(l);
-        System.out.println("→ Sửa thành công!");
+        System.out.println("→ Sửa giảng viên thành công!");
     }
 
     private void deleteLecturer() {
-        System.out.print("ID cần xóa: ");
+        System.out.print("ID giảng viên cần xóa: ");
         String id = scanner.nextLine().trim();
-        if (service.deleteLecturer(id)) System.out.println("→ Xóa thành công!");
-        else System.out.println("→ Không tìm thấy!");
+        if (service.deleteLecturer(id)) {
+            System.out.println("→ Xóa giảng viên thành công!");
+        } else {
+            System.out.println("→ Không tìm thấy giảng viên!");
+        }
     }
 
     private void listLecturers() {
         List<Lecturer> list = service.getAll();
-        if (list.isEmpty()) System.out.println("→ Chưa có giảng viên nào!");
-        else {
+        if (list.isEmpty()) {
+            System.out.println("→ Chưa có giảng viên nào!");
+        } else {
             System.out.println("--- Danh sách giảng viên ---");
             for (Lecturer l : list) {
                 System.out.printf("%s - %s - %s - %s%n",

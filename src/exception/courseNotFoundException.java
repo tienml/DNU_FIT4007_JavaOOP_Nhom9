@@ -1,8 +1,7 @@
 package exception;
 
-/**
- * Ném khi không tìm thấy học phần.
- */
-public class courseNotFoundException extends RuntimeException {
-    public courseNotFoundException(String id){ super("Course not found: " + id); }
+public class courseNotFoundException extends Exception {
+    public courseNotFoundException(String courseId) {
+        super("Không tìm thấy học phần với mã: " + courseId);
+    }
 }

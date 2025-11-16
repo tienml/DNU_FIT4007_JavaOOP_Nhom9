@@ -1,5 +1,6 @@
 package service;
 
+import exception.courseNotFoundException;
 import model.Course;
 import repository.courseRepository;
 
@@ -14,17 +15,29 @@ public class courseService {
     }
 
     public boolean addCourse(Course c) {
+        if (repo.findById(c.getCode()).isPresent()) {
+            System.out.println("→ Mã môn học đã tồn tại!");
+            return false;
+        }
         return repo.add(c);
     }
 
     public boolean updateCourse(String code, Course updated) {
         var existing = repo.findById(code).orElse(null);
-        if (existing == null) return false;
+        if (existing == null) {
+            System.out.println("→ Môn học không tồn tại.");
+            return false;
+        }
         updated.setCode(code);
         return repo.update(updated);
     }
 
     public boolean deleteCourse(String code) {
+        var existing = repo.findById(code).orElse(null);
+        if (existing == null) {
+            System.out.println("→ Môn học không tồn tại.");
+            return false;
+        }
         return repo.delete(code);
     }
 
@@ -37,5 +50,10 @@ public class courseService {
 
     public List<Course> getAll() {
         return repo.getAll();
+    }
+
+    public Course findOrThrow(String code) throws courseNotFoundException {
+        return repo.findById(code)
+                .orElseThrow(() -> new courseNotFoundException(code));
     }
 }

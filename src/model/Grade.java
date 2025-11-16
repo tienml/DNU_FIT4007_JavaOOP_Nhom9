@@ -1,5 +1,7 @@
 package model;
 import exception.invalidScoreException;
+import util.IDGenerator;
+import util.Validator;
 
 public class Grade {
     private String studentId;
@@ -11,13 +13,14 @@ public class Grade {
     private Double fin;
     private Double project;
     private Double total;
-
+    private String id;
     public Grade() {
     }
 
     public Grade(String studentId, String courseId) {
         this.studentId = studentId;
         this.courseId = courseId;
+        this.id = IDGenerator.uuid();
     }
 
     public Grade(Student student, Course course) {
@@ -109,8 +112,12 @@ public class Grade {
         this.total = total;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public void validateScore(Double s) throws invalidScoreException {
-        if (s != null && (s < 0 || s > 10)) {
+        if (!Validator.isValidScore(s)) {
             throw new invalidScoreException("The score must be between 0 and 10, or null if it has not been entered.");
         }
     }

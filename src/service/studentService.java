@@ -1,5 +1,6 @@
 package service;
 
+import exception.studentNotFoundException;
 import model.Student;
 import repository.studentRepository;
 
@@ -31,5 +32,10 @@ public class studentService {
 
     public List<Student> getAll() {
         return repo.getAll();
+    }
+
+    public Student findOrThrow(String id) throws studentNotFoundException {
+        return repo.findById(id)
+                .orElseThrow(() -> new studentNotFoundException(id));
     }
 }

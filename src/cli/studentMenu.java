@@ -1,6 +1,7 @@
 package cli;
 
 import model.Student;
+import service.searchService;
 import service.studentService;
 
 import java.util.List;
@@ -10,10 +11,12 @@ import java.util.Scanner;
 public class studentMenu {
 
     private final studentService service;
+    private final searchService searchService;
     private final Scanner scanner;
 
-    public studentMenu(studentService service, Scanner scanner) {
+    public studentMenu(studentService service, searchService searchService, Scanner scanner) {
         this.service = service;
+        this.searchService = searchService;
         this.scanner = scanner;
     }
 
@@ -44,21 +47,25 @@ public class studentMenu {
     }
 
     private void addStudent() {
-        System.out.print("Nhập ID: ");
-        String id = scanner.nextLine().trim();
-        if (service.findById(id).isPresent()) {
-            System.out.println("→ ID đã tồn tại!");
-            return;
-        }
+        Student s = new Student();
+
         System.out.print("Nhập họ tên: ");
         String name = scanner.nextLine().trim();
-        System.out.print("Nhập ngành: ");
-        String major = scanner.nextLine().trim();
-        int year = inputYear();
+        s.setFullName(name);
+        System.out.print("Nhập giới tính (Male/Female): ");
+        String gender = scanner.nextLine().trim();
+        s.setGender(gender);
+        System.out.print("Nhập ngành / lớp (VD: CG01): ");
+        String majorOrGroup = scanner.nextLine().trim();
+        s.setMajor(majorOrGroup);
+        s.setClassGroupId(majorOrGroup);
 
-        Student s = new Student(id, name, major, year);
+        int year = inputYear();
+        s.setYear(year);
+        s.setBirthDate(year + "-01-01");
+
         if (service.addStudent(s)) {
-            System.out.println("→ Thêm sinh viên thành công!");
+            System.out.println("→ Thêm sinh viên thành công! ID được gán: " + s.getId());
         } else {
             System.out.println("→ Thêm sinh viên thất bại!");
         }
@@ -73,17 +80,32 @@ public class studentMenu {
             return;
         }
         Student s = optional.get();
+
         System.out.print("Tên mới (để trống nếu giữ nguyên): ");
         String name = scanner.nextLine().trim();
         if (!name.isEmpty()) s.setFullName(name);
-        System.out.print("Ngành mới (để trống nếu giữ nguyên): ");
+
+        System.out.print("Giới tính mới (để trống nếu giữ nguyên): ");
+        String gender = scanner.nextLine().trim();
+        if (!gender.isEmpty()) s.setGender(gender);
+
+        System.out.print("Ngành / lớp mới (để trống nếu giữ nguyên): ");
         String major = scanner.nextLine().trim();
-        if (!major.isEmpty()) s.setMajor(major);
-        System.out.print("Năm mới (để trống nếu giữ nguyên): ");
+        if (!major.isEmpty()) {
+            s.setMajor(major);
+            s.setClassGroupId(major);
+        }
+
+        System.out.print("Năm sinh mới (để trống nếu giữ nguyên): ");
         String yearInput = scanner.nextLine().trim();
         if (!yearInput.isEmpty()) {
-            try { s.setYear(Integer.parseInt(yearInput)); }
-            catch (NumberFormatException e) { System.out.println("→ Năm không hợp lệ, giữ nguyên."); }
+            try {
+                int y = Integer.parseInt(yearInput);
+                s.setYear(y);
+                s.setBirthDate(y + "-01-01");
+            } catch (NumberFormatException e) {
+                System.out.println("→ Năm không hợp lệ, giữ nguyên.");
+            }
         }
 
         if (service.updateStudent(s)) {
@@ -106,20 +128,18 @@ public class studentMenu {
     private void findById() {
         System.out.print("Nhập ID sinh viên: ");
         String id = scanner.nextLine().trim();
-        Optional<Student> optional = service.findById(id);
-        if (optional.isEmpty()) {
+        Student s = searchService.searchById(id);
+        if (s == null) {
             System.out.println("→ Không tìm thấy sinh viên!");
-            return;
+        } else {
+            printStudentInfo(s);
         }
-        printStudentInfo(optional.get());
     }
 
     private void findByName() {
         System.out.print("Nhập tên hoặc một phần tên: ");
-        String keyword = scanner.nextLine().trim().toLowerCase();
-        List<Student> result = service.getAll().stream()
-                .filter(s -> s.getFullName().toLowerCase().contains(keyword))
-                .toList();
+        String keyword = scanner.nextLine().trim();
+        List<Student> result = searchService.searchByName(keyword);
 
         if (result.isEmpty()) {
             System.out.println("→ Không tìm thấy sinh viên nào!");
@@ -138,14 +158,21 @@ public class studentMenu {
     }
 
     private void printStudentInfo(Student s) {
-        System.out.printf("ID: %s | Họ tên: %s | Ngành: %s | Năm: %d | GPA: %.2f\n",
-                s.getId(), s.getFullName(), s.getMajor(), s.getYear(), s.calculateGPA());
+        System.out.printf(
+                "ID: %s | Họ tên: %s | Ngành/Lớp: %s | Năm sinh: %d | Giới tính: %s | GPA: %.2f%n",
+                s.getId(),
+                s.getFullName(),
+                s.getMajor(),
+                s.getYear(),
+                (s.getGender() != null ? s.getGender() : "N/A"),
+                s.calculateGPA()
+        );
     }
 
     private int inputYear() {
         int year;
         while (true) {
-            System.out.print("Nhập năm: ");
+            System.out.print("Nhập năm sinh (VD: 2003): ");
             String input = scanner.nextLine().trim();
             try {
                 year = Integer.parseInt(input);

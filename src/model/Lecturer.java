@@ -1,6 +1,5 @@
 package model;
 
-
 public class Lecturer extends Person {
     private String department;
     private String email;
@@ -8,8 +7,7 @@ public class Lecturer extends Person {
     public Lecturer() {}
 
     public Lecturer(String id, String fullName, String department, String email) {
-        super.id = id;
-        super.fullName = fullName;
+        super(id, fullName);
         this.department = department;
         this.email = email;
     }
@@ -30,7 +28,8 @@ public class Lecturer extends Person {
         this.email = email;
     }
 
+    @Override
     public String toString() {
-        return "Lecturer: " + fullName + " (" + id + "), Department: " + department + ", Email: " + email;
+        return String.format("Lecturer: %s (%s), Department: %s, Email: %s", fullName, id, department, email);
     }
 }

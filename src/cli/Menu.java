@@ -1,6 +1,7 @@
 package cli;
 
 import service.*;
+import repository.gradeRepository;
 import java.util.Scanner;
 
 public class Menu {
@@ -10,14 +11,17 @@ public class Menu {
     private final reportService reportService;
     private final scoringService scoringService;
     private final lecturerService lecturerService;
+    private final gradeRepository gradeRepo;
+    private final searchService searchService;
     private final Scanner scanner;
-
     public Menu(studentService studentService,
                 courseService courseService,
                 rankingService rankingService,
                 reportService reportService,
                 scoringService scoringService,
                 lecturerService lecturerService,
+                gradeRepository gradeRepo,
+                searchService searchService,
                 Scanner scanner) {
         this.studentService = studentService;
         this.courseService = courseService;
@@ -25,6 +29,8 @@ public class Menu {
         this.reportService = reportService;
         this.scoringService = scoringService;
         this.lecturerService = lecturerService;
+        this.gradeRepo = gradeRepo;
+        this.searchService = searchService;
         this.scanner = scanner;
     }
 
@@ -42,10 +48,10 @@ public class Menu {
 
             String choice = scanner.nextLine().trim();
             switch (choice) {
-                case "1" -> new studentMenu(studentService, scanner).display();
+                case "1" -> new studentMenu(studentService, searchService, scanner).display();
                 case "2" -> new courseMenu(courseService, scanner).display();
                 case "3" -> new lecturerMenu(lecturerService, scanner).display();
-                case "4" -> new gradeMenu(scoringService, studentService, courseService, scanner).display();
+                case "4" -> new gradeMenu(scoringService, studentService, courseService, gradeRepo, scanner).display();
                 case "5" -> new rankingMenu(rankingService, scanner).display();
                 case "6" -> new reportMenu(reportService, scanner).display();
                 case "0" -> { return; }

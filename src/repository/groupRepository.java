@@ -10,12 +10,12 @@ public class groupRepository extends baseRepository<Group> {
 
     @Override
     protected Group fromCSV(String[] cols) {
-        if (cols == null || cols.length < 1) return null;
-        Group g = new Group();
-        if (cols.length > 0) g.setId(cols[0].trim());
-        if (cols.length > 1) g.setName(cols[1].trim());
-        if (cols.length > 2) g.setFaculty(cols[2].trim());
-        return g;
+        if (cols == null || cols.length < 3) return null;
+        return new Group(
+                cols[0].trim(),
+                cols[1].trim(),
+                cols[2].trim()
+        );
     }
 
     @Override

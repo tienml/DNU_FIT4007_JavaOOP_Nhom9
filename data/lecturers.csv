@@ -1,9 +1,9 @@
-id,lecturerCode,fullName,department
-1,GV001,Nguyen Van An,CNTT
-2,GV002,Tran Thi Binh,Toan
-3,GV003,Le Minh Hoa,Vat ly
-4,GV004,Pham Thi Trang,Hoa hoc
-5,GV005,Do Van Nam,Kinh te
-6,GV006,Nguyen Thi Huong,CNTT
-7,GV007,Tran Van Thanh,Kinh te
-8,GV008,Pham Thi Lan,Toan
+id,lecturerCode,fullName,department,email
+1,L001,Nguyen Thi Mai,Computer Science,mai.nguyen@university.edu
+2,L002,Tran Minh Tu,Mathematics,tu.tran@university.edu
+3,L003,Pham Lan Anh,Physics,anh.pham@university.edu
+4,L004,Le Thi Mai,Engineering,mai.le@university.edu
+5,L005,Hoang Minh Tuan,Chemistry,tuan.hoang@university.edu
+6,L006,Nguyen Anh Tuan,Biology,tuan.nguyen@university.edu
+7,L007,Pham Thi Lan,Computer Science,lan.pham@university.edu
+8,L008,Le Minh Thi,Mathematics,thi.le@university.edu

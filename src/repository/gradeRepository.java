@@ -1,11 +1,10 @@
 package repository;
 
 import exception.invalidScoreException;
-import model.Course;
 import model.Grade;
-import model.Student;
+import util.NumberFormatter;
 import java.io.File;
-import java.util.Locale;
+import java.util.Optional;
 
 public class gradeRepository extends baseRepository<Grade> {
 
@@ -52,20 +51,16 @@ public class gradeRepository extends baseRepository<Grade> {
             courseId = g.getCourse().getCode();
         }
 
-        String id = "";
-        if (studentId != null && !studentId.isBlank() &&
-                courseId != null && !courseId.isBlank()) {
-            id = studentId + ":" + courseId;
-        }
+        int rowId = items.indexOf(g) + 1;
 
-        String quiz  = fmt(g.getQuiz());
-        String mid   = fmt(g.getMid());
-        String fin   = fmt(g.getFin());
-        String proj  = fmt(g.getProject());
-        String total = fmt(g.getTotal());
+        String quiz  = NumberFormatter.formatCSV(g.getQuiz());
+        String mid   = NumberFormatter.formatCSV(g.getMid());
+        String fin   = NumberFormatter.formatCSV(g.getFin());
+        String proj  = NumberFormatter.formatCSV(g.getProject());
+        String total = NumberFormatter.formatCSV(g.getTotal());
 
         return String.join(",",
-                safe(id),
+                String.valueOf(rowId),
                 safe(studentId),
                 safe(courseId),
                 quiz, mid, fin, proj, total
@@ -114,13 +109,18 @@ public class gradeRepository extends baseRepository<Grade> {
         }
     }
 
-    private double parseDouble(String s) {
-        try { return Double.parseDouble(s.trim()); }
-        catch (Exception e) { return 0.0; }
+    public Optional<Grade> findByStudentAndCourse(String studentId, String courseId) {
+        if (studentId == null || courseId == null) return Optional.empty();
+        return findById(studentId + ":" + courseId);
     }
 
-    private String fmt(Double d) {
-        return d == null ? "" : String.format(Locale.ROOT, "%.2f", d);
+    private double parseDouble(String s) {
+        try {
+            return Double.parseDouble(s.trim());
+        }
+        catch (Exception e) {
+            return 0.0;
+        }
     }
 
     private String safe(String s) {

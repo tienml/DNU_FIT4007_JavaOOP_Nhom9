@@ -1,6 +1,7 @@
 package service;
 
 import cli.reportGenerator;
+import iface.Rankable;
 import model.Student;
 import repository.studentRepository;
 
@@ -11,7 +12,6 @@ import java.util.stream.Collectors;
 public class reportService {
     private final studentRepository studentRepo;
     private final reportGenerator generator = new reportGenerator();
-    private final classificationService classifier = new classificationService();
 
     public reportService(studentRepository studentRepo) {
         this.studentRepo = studentRepo;
@@ -28,8 +28,9 @@ public class reportService {
 
     public Map<String, Long> getClassificationStatistics() {
         return studentRepo.getAll().stream()
+                .map(s -> (Rankable) s)
                 .collect(Collectors.groupingBy(
-                        s -> classifier.classify(s.calculateGPA()),
+                        Rankable::classify,
                         Collectors.counting()
                 ));
     }

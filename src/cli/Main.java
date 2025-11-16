@@ -8,14 +8,15 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        // Khởi tạo các file CSV
         studentRepository studentRepo = new studentRepository(new File("data/students.csv"));
         courseRepository courseRepo = new courseRepository(new File("data/courses.csv"));
+        groupRepository groupRepo = new groupRepository(new File("data/class_groups.csv"));
         gradeRepository gradeRepo = new gradeRepository(new File("data/grades.csv"));
         lecturerRepository lecturerRepo = new lecturerRepository(new File("data/lecturers.csv"));
 
         studentRepo.load();
         courseRepo.load();
+        groupRepo.load();
         gradeRepo.load();
         lecturerRepo.load();
 
@@ -23,15 +24,16 @@ public class Main {
 
         studentService studentService = new studentService(studentRepo);
         courseService courseService = new courseService(courseRepo);
-        rankingService rankingService = new rankingService(studentRepo, gradeRepo);
+        rankingService rankingService = new rankingService(studentRepo, groupRepo);
         reportService reportService = new reportService(studentRepo);
         scoringService scoringService = new scoringService();
         lecturerService lecturerService = new lecturerService(lecturerRepo);
+        searchService searchService = new searchService(studentRepo);
 
         Scanner scanner = new Scanner(System.in);
 
         Menu menu = new Menu(studentService, courseService, rankingService,
-                reportService, scoringService, lecturerService, scanner);
+                reportService, scoringService, lecturerService, gradeRepo,searchService, scanner);
         menu.display();
 
         studentRepo.save();
