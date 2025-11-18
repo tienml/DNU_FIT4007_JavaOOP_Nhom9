@@ -122,6 +122,10 @@ public class Grade {
         }
     }
 
+    public boolean isFailedCourse() {
+        return total != null && total < 4.0;
+    }
+
     @Override
     public String toString() {
         String sName = student != null ? student.getFullName() : (studentId != null ? studentId : "N/A");

@@ -3,6 +3,7 @@ package model;
 import iface.Rankable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Student extends Person implements Rankable {
     private String major;
@@ -73,6 +74,24 @@ public class Student extends Person implements Rankable {
 
     public void addGrade(Grade g) {
         grades.add(g);
+    }
+
+    public boolean hasCompletedCourses(int minCourses) {
+        return grades.size() >= minCourses;
+    }
+
+    public int getCompletedCoursesCount() {
+        return grades.size();
+    }
+
+    public List<Grade> getFailedCourses() {
+        return grades.stream()
+                .filter(Grade::isFailedCourse)
+                .collect(Collectors.toList());
+    }
+
+    public boolean hasFailedCourses() {
+        return grades.stream().anyMatch(Grade::isFailedCourse);
     }
 
     @Override
