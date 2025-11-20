@@ -1,0 +1,417 @@
+@startuml
+set namespaceSeparator .
+
+' ==========================
+' PACKAGE MODEL
+' ==========================
+package "model" {
+
+    abstract class Person {
+        - id : String
+        - fullName : String
+        + getId() : String
+        + setId(String)
+        + getFullName() : String
+        + setFullName(String)
+        + toString() : String
+    }
+
+    class Student {
+        - major : String
+        - year : int
+        - grades : List<Grade>
+        + getMajor() : String
+        + setMajor(String)
+        + getYear() : int
+        + setYear(int)
+        + getGrades() : List<Grade>
+        + setGrades(List<Grade>)
+        + addGrade(Grade)
+        + calculateGPA() : double
+        + toString() : String
+    }
+
+    class Lecturer {
+        - department : String
+        - email : String
+        + getDepartment() : String
+        + setDepartment(String)
+        + getEmail() : String
+        + setEmail(String)
+        + toString() : String
+    }
+
+    class Course {
+        - code : String
+        - name : String
+        - credit : int
+        - wQuiz : double
+        - wMid : double
+        - wFinal : double
+        - wProject : double
+        + getCode() : String
+        + setCode(String)
+        + getName() : String
+        + setName(String)
+        + getCredit() : int
+        + setCredit(int)
+        + getwQuiz() : double
+        + getwMid() : double
+        + getwFinal() : double
+        + getwProject() : double
+        + setWeights(double,double,double,double)
+        + toString() : String
+    }
+
+    class Assessment {
+        - name : String
+        - weight : double
+        - score : Double
+        + getName() : String
+        + setName(String)
+        + getWeight() : double
+        + setWeight(double)
+        + getScore() : Double
+        + setScore(Double)
+        + toString() : String
+    }
+
+    class Quiz {
+        + getType() : String
+    }
+
+    class Exam {
+        + getType() : String
+    }
+
+    class Project {
+        + getType() : String
+    }
+
+    class Grade {
+        - studentId : String
+        - courseId  : String
+        - student   : Student
+        - course    : Course
+        - quiz      : Double
+        - mid       : Double
+        - fin       : Double
+        - project   : Double
+        - total     : Double
+        + getStudentId() : String
+        + setStudentId(String)
+        + getCourseId() : String
+        + setCourseId(String)
+        + getStudent() : Student
+        + setStudent(Student)
+        + getCourse() : Course
+        + setCourse(Course)
+        + getQuiz() : Double
+        + setQuiz(Double)
+        + getMid() : Double
+        + setMid(Double)
+        + getFin() : Double
+        + setFin(Double)
+        + getProject() : Double
+        + setProject(Double)
+        + getTotal() : Double
+        + setTotal(Double)
+        + validateScore(Double)
+        + toString() : String
+    }
+
+    class Group {
+        - id      : String
+        - name    : String
+        - faculty : String
+        + getId() : String
+        + setId(String)
+        + getName() : String
+        + setName(String)
+        + getFaculty() : String
+        + setFaculty(String)
+        + toString() : String
+    }
+}
+
+' ==========================
+' PACKAGE REPOSITORY
+' ==========================
+package "repository" {
+
+    abstract class BaseRepository<T> {
+        - file  : java.io.File
+        - items : List<T>
+        # fromCSV(String[]) : T
+        # toCSV(T) : String
+        # getHeader() : String[]
+        # getId(T) : String
+        # simpleSplit(String) : String[]
+        + load() : void
+        + save() : void
+        + getAll() : List<T>
+        + findById(String) : java.util.Optional<T>
+        + add(T) : boolean
+        + update(T) : boolean
+        + delete(String) : boolean
+    }
+
+    class StudentRepository {
+        + fromCSV(String[]) : Student
+        + toCSV(Student) : String
+        + getHeader() : String[]
+        + getId(Student) : String
+    }
+
+    class CourseRepository {
+        + fromCSV(String[]) : Course
+        + toCSV(Course) : String
+        + getHeader() : String[]
+        + getId(Course) : String
+    }
+
+    class GradeRepository {
+        + fromCSV(String[]) : Grade
+        + toCSV(Grade) : String
+        + getHeader() : String[]
+        + getId(Grade) : String
+        + attachTo(StudentRepository, CourseRepository) : void
+    }
+
+    class LecturerRepository {
+        + fromCSV(String[]) : Lecturer
+        + toCSV(Lecturer) : String
+        + getHeader() : String[]
+        + getId(Lecturer) : String
+    }
+
+    class GroupRepository {
+        + fromCSV(String[]) : Group
+        + toCSV(Group) : String
+        + getHeader() : String[]
+        + getId(Group) : String
+    }
+}
+
+' ==========================
+' PACKAGE SERVICE
+' ==========================
+package "service" {
+
+    class ScoringService {
+        + calculateTotal(Course, Grade) : double
+    }
+
+    class GPAService {
+        + calculateGPA(List<Grade>) : double
+    }
+
+    class ClassificationService {
+        + classify(double) : String
+    }
+
+    class CourseService {
+        - repo : CourseRepository
+        + addCourse(Course) : boolean
+        + updateCourse(String, Course) : boolean
+        + deleteCourse(String) : boolean
+        + search(String) : List<Course>
+        + getAll() : List<Course>
+    }
+
+    class StudentService {
+        - repo : StudentRepository
+        + addStudent(Student) : boolean
+        + updateStudent(Student) : boolean
+        + deleteStudent(String) : boolean
+        + findById(String) : java.util.Optional<Student>
+        + search(String) : List<Student>
+        + getAll() : List<Student>
+    }
+
+    class GradeService {
+        - repo : GradeRepository
+        - scoringService : ScoringService
+        + updateGrade(Grade) : boolean
+        + getGradesByStudent(String) : List<Grade>
+        + recalculateTotal(Grade) : double
+    }
+
+    class RankingService {
+        - studentRepo : StudentRepository
+        - gradeRepo   : GradeRepository
+        + rankingByClass(String) : List<Student>
+        + rankingByFaculty(String) : List<Student>
+        + rankingSchool() : List<Student>
+    }
+
+    class ReportService {
+        - studentRepo : StudentRepository
+        - gradeRepo   : GradeRepository
+        + getTopGPAStudents() : List<Student>
+        + getClassificationStatistics() : java.util.Map<String, Long>
+        + exportReportToFile(String) : void
+    }
+
+    class SearchService {
+        - studentRepo : StudentRepository
+        + searchById(String) : Student
+        + searchByName(String) : List<Student>
+    }
+}
+
+' ==========================
+' PACKAGE UTIL
+' ==========================
+package "util" {
+
+    class CSVUtils {
+        + read(java.io.File) : List<String[]>
+        + write(java.io.File, List<String[]>) : void
+    }
+
+    class IDGenerator {
+        + uuid() : String
+        + nextId(String, int) : String
+    }
+
+    class Validator {
+        + isValidScore(Double) : boolean
+        + notEmpty(String) : boolean
+        + isInt(String) : boolean
+        + isDouble(String) : boolean
+    }
+
+    class NumberFormatter {
+        + format2(Double) : String
+        + format1(Double) : String
+    }
+}
+
+' ==========================
+' PACKAGE CLI
+' ==========================
+package "cli" {
+
+    class Main {
+        + main(String[]) : void
+    }
+
+    class Menu {
+        + run() : void
+    }
+
+    class CourseMenu {
+        + display() : void
+    }
+
+    class StudentMenu {
+        + display() : void
+    }
+
+    class GradeMenu {
+        + display() : void
+    }
+
+    class RankingMenu {
+        + display() : void
+    }
+
+    class ReportMenu {
+        + display() : void
+    }
+
+    class InputHandler {
+        + getString(String) : String
+        + getInt(String) : int
+    }
+
+    class ReportGenerator {
+        + exportReportToFile(String, List<model.Student>) : void
+    }
+
+    class SearchManager {
+        + fuzzySearch(List<String>, String) : List<String>
+    }
+}
+
+' ==========================
+' PACKAGE EXCEPTION
+' ==========================
+package "exception" {
+    class InvalidScoreException
+    class StudentNotFoundException
+    class CourseNotFoundException
+}
+
+' ==========================
+' PACKAGE INTERFACE
+' ==========================
+package "interface" {
+    interface Persistable {
+        + load() : void
+        + save() : void
+    }
+
+    interface Rankable {
+        + calculateGPA() : double
+    }
+}
+
+' ==========================
+' INHERITANCE (EXTENDS)
+' ==========================
+Person <|-- Student
+Person <|-- Lecturer
+
+Assessment <|-- Quiz
+Assessment <|-- Exam
+Assessment <|-- Project
+
+BaseRepository <|-- StudentRepository
+BaseRepository <|-- CourseRepository
+BaseRepository <|-- GradeRepository
+BaseRepository <|-- LecturerRepository
+BaseRepository <|-- GroupRepository
+
+' ==========================
+' IMPLEMENTS
+' (nếu bạn dùng thật trong code thì giữ,
+'  nếu không dùng interface thì có thể bỏ)
+' ==========================
+Student ..|> Rankable
+Student ..|> Persistable
+Course  ..|> Persistable
+
+' ==========================
+' ASSOCIATIONS
+' ==========================
+Student "1" o-- "*" Grade
+Course  "1" o-- "*" Grade
+
+Grade --> Student : student
+Grade --> Course  : course
+
+RankingService --> StudentRepository
+RankingService --> GradeRepository
+ReportService  --> StudentRepository
+ReportService  --> GradeRepository
+SearchService  --> StudentRepository
+GradeService   --> GradeRepository
+GradeService   --> ScoringService
+CourseService  --> CourseRepository
+StudentService --> StudentRepository
+
+CSVUtils ..> BaseRepository
+IDGenerator ..> Student
+IDGenerator ..> Course
+
+Menu --> CourseMenu
+Menu --> StudentMenu
+Menu --> GradeMenu
+Menu --> RankingMenu
+Menu --> ReportMenu
+
+Main --> Menu
+
+@enduml
